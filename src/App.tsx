@@ -14,7 +14,8 @@ import {
   Plus, 
   X,
   Users,
-  Heart
+  Heart,
+  Printer
 } from 'lucide-react';
 import { FamilyMember, Gender } from './types';
 
@@ -64,22 +65,40 @@ export default function App() {
     return roots;
   }, [members]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans" dir="rtl">
-      <header className="max-w-6xl mx-auto mb-12 text-center">
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-2xl mb-4"
-        >
-          <Users className="w-8 h-8 text-emerald-600" />
-        </motion.div>
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">شجرة العائلة</h1>
-        <p className="text-slate-500">قم ببناء وتوثيق تاريخ عائلتك العريق</p>
+      <header className="max-w-6xl mx-auto mb-12 text-center no-print">
+        <div className="flex justify-between items-start mb-8">
+          <div className="flex-1"></div>
+          <div className="flex-1 flex flex-col items-center">
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-2xl mb-4"
+            >
+              <Users className="w-8 h-8 text-emerald-600" />
+            </motion.div>
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">شجرة العائلة</h1>
+            <p className="text-slate-500">قم ببناء وتوثيق تاريخ عائلتك العريق</p>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <button 
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm text-slate-600 font-medium"
+            >
+              <Printer className="w-5 h-5" />
+              طباعة الشجرة
+            </button>
+          </div>
+        </div>
       </header>
 
       <main className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-10 overflow-x-auto border border-slate-100">
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-10 overflow-x-auto border border-slate-100 print:shadow-none print:border-none">
           <div className="flex justify-center min-w-max">
             {treeData.map(root => (
               <TreeNode 
@@ -95,7 +114,7 @@ export default function App() {
           </div>
           
           {members.length === 0 && (
-            <div className="text-center py-20">
+            <div className="text-center py-20 no-print">
               <p className="text-slate-400 mb-4">لا يوجد أفراد في الشجرة حالياً</p>
               <button 
                 onClick={() => {
@@ -122,7 +141,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <footer className="mt-12 text-center text-slate-400 text-sm">
+      <footer className="mt-12 text-center text-slate-400 text-sm no-print">
         تم التطوير بكل ❤️ لتوثيق الروابط العائلية
       </footer>
     </div>
@@ -138,6 +157,7 @@ interface TreeNodeProps {
 const TreeNode: React.FC<TreeNodeProps> = ({ member, onAddChild, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const hasChildren = member.children && member.children.length > 0;
+  const childrenCount = member.children ? member.children.length : 0;
 
   return (
     <div className="flex flex-col items-center relative px-4">
@@ -153,14 +173,21 @@ const TreeNode: React.FC<TreeNodeProps> = ({ member, onAddChild, onDelete }) => 
           hover:shadow-lg hover:-translate-y-1 group
         `}
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-3 mb-1">
           <div className={`p-2 rounded-xl ${member.gender === 'male' ? 'bg-blue-100' : 'bg-rose-100'}`}>
             <User className={`w-5 h-5 ${member.gender === 'male' ? 'text-blue-600' : 'text-rose-600'}`} />
           </div>
           <span className="font-bold truncate text-lg">{member.name}</span>
         </div>
+
+        {childrenCount > 0 && (
+          <div className="text-xs opacity-70 mb-1 flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            <span>عدد الأبناء: {childrenCount}</span>
+          </div>
+        )}
         
-        <div className="flex justify-between items-center mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex justify-between items-center mt-3 opacity-0 group-hover:opacity-100 transition-opacity no-print">
           <button 
             onClick={() => onAddChild(member.id)}
             className="p-1.5 bg-white rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-600 transition-colors"
@@ -185,7 +212,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ member, onAddChild, onDelete }) => 
         {hasChildren && (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-full p-0.5 shadow-sm hover:bg-slate-50"
+            className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-full p-0.5 shadow-sm hover:bg-slate-50 no-print"
           >
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>

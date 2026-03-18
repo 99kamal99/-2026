@@ -16,3 +16,39 @@ body {
   position: absolute;
   background-color: #cbd5e1;
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background-color: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .bg-slate-50 {
+    background-color: white !important;
+  }
+  .shadow-xl {
+    shadow: none !important;
+    box-shadow: none !important;
+  }
+  .border {
+    border: 1px solid #e2e8f0 !important;
+  }
+  .min-w-max {
+    min-width: unset !important;
+    width: 100% !important;
+  }
+  header, footer {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  .bg-white {
+    border: none !important;
+  }
+}
